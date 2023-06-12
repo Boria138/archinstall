@@ -450,16 +450,17 @@ arch-chroot /mnt /bin/bash -c "systemctl --global enable dbus-broker.service"
 arch-chroot /mnt /bin/bash -c "systemctl mask plymouth-quit-wait.service"
 #----------------------------GRUB----------------------------------------------------------------------
 UUID=$(sudo blkid -o value -s UUID -l -t TYPE=swap)
+lpj_value=$(sudo dmesg | grep "lpj=" | awk -F'lpj=' '{print $2}' | awk '{gsub(/\(|\)/,""); print $1}')
 arch-chroot /mnt /bin/bash -c "grub-install /dev/$disk"
-arch-chroot /mnt /bin/bash -c "sed -i s/'GRUB_CMDLINE_LINUX_DEFAULT=\"loglevel=3 quiet\"'/'GRUB_CMDLINE_LINUX_DEFAULT=\"loglevel=3 quiet splash raid=noautodetect mitigations=off preempt=none nowatchdog audit=0 selinux=0 split_lock_detect=off pci=pcie_bus_perf zswap.enabled=0 ibt=off libahci.ignore_sss=1 nmi_watchdog=0\"'/g /etc/default/grub"
+arch-chroot /mnt /bin/bash -c "sed -i s/'GRUB_CMDLINE_LINUX_DEFAULT=.*'/'GRUB_CMDLINE_LINUX_DEFAULT= loglevel=3 quiet splash raid=noautodetect mitigations=off preempt=none nowatchdog audit=0 selinux=0 split_lock_detect=off pci=pcie_bus_perf zswap.enabled=0 ibt=off libahci.ignore_sss=1 nmi_watchdog=0 lpj=$lpj_value\"/g' /etc/default/grub"
 arch-chroot /mnt /bin/bash -c "sed -i s/'#GRUB_DISABLE_OS_PROBER=false'/'GRUB_DISABLE_OS_PROBER=false'/g /etc/default/grub"
 if [ -n "$UUID" ]; then
-    arch-chroot /mnt /bin/bas -c "sed -i 's/GRUB_CMDLINE_LINUX_DEFAULT=\"/GRUB_CMDLINE_LINUX_DEFAULT=\"resume=UUID=$UUID /' /etc/default/grub"
+    arch-chroot /mnt /bin/bash -c "sed -i s/'GRUB_CMDLINE_LINUX_DEFAULT='/'GRUB_CMDLINE_LINUX_DEFAULT=\"resume=UUID=$UUID/g' /etc/default/grub"
 fi
 arch-chroot /mnt /bin/bash -c "grub-mkconfig -o /boot/grub/grub.cfg"
 #----------------------------initcpio----------------------------------------------------------------------
 arch-chroot /mnt /bin/bash -c "sed -i s/'BINARIES=()'/'BINARIES=(setfont)'/g /etc/mkinitcpio.conf"
-arch-chroot /mnt /bin/bash -c "sed -i s/'HOOKS=(base udev autodetect modconf kms keyboard keymap consolefont block filesystems fsck)'/'HOOKS=(base systemd plymouth autodetect modconf kms keyboard sd-vconsole block filesystems)'/g /etc/mkinitcpio.conf"
+arch-chroot /mnt /bin/bash -c "sed -i s/'HOOKS=.*'/'HOOKS=(base systemd plymouth autodetect modconf kms keyboard sd-vconsole block filesystems)'/g /etc/mkinitcpio.conf"
 arch-chroot /mnt /bin/bash -c "mkinitcpio -P"
 #----------------------------Accounts----------------------------------------------------------------------
 arch-chroot /mnt /bin/bash -c "useradd -m -G wheel,storage,rfkill,realtime,video,audio,network -s /bin/bash $username"
