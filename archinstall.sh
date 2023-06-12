@@ -206,38 +206,7 @@ arch-chroot /mnt /bin/bash -c "rate-mirrors --allow-root arch | tee /etc/pacman.
 arch-chroot /mnt /bin/bash -c "rate-mirrors --allow-root chaotic-aur | tee /etc/pacman.d/chaotic-mirrorlist"
 #----------------------------Base Packages----------------------------------------------------------------------
 arch-chroot /mnt /bin/bash -c "pacman -Syy --needed --noconfirm noto-fonts noto-fonts-cjk noto-fonts-emoji noto-fonts-extra ttf-ms-fonts ttf-meslo-nerd-font-powerlevel10k bluez-utils bluez pipewire-jack grub efibootmgr firefox firefox-i18n-ru networkmanager bash-completion ntfs-3g os-prober xdg-user-dirs xdg-utils xclip wl-clipboard lrzip zip unrar unzip unace p7zip squashfs-tools hunspell gstreamer gst-plugins-bad gst-plugin-pipewire gst-plugins-base gst-plugins-good gst-libav ffmpegthumbnailer hunspell-en_us hunspell-ru xorg xorg-server xorg-xinit realtime-privileges dbus-broker irqbalance ananicy-cpp ananicy-rules-git memavaild uresourced plymouth prelockd yay cantarell-fonts"
-clear
-echo '
-                                      Звуковой сервер
-
-              .─────────────────────────────────────────────────────────────────────.
-              .                                                                     .
-              .                                                                     .
-              .       Добро пожаловать в меню установки звукового сервера           .
-              .                                                                     .
-              .   На этом этапе будет установлен звуковой сервер по вашему выбору   .
-              .                                                                     .
-              .                                                                     .
-              .                                                                     .
-              .─────────────────────────────────────────────────────────────────────.
-
-'
-echo -e "\t
-
-                          -> PulseAudio ( 1 )"
-echo -e "\t
-
-
-                          -> PipeWire   ( 2 )"
-echo -n "
-
-                          -> Введите значение : "
-read main_menu
-      case "$main_menu" in
-         "1" ) arch-chroot /mnt /bin/bash -c "pacman -S --needed --noconfirm alsa-lib alsa-utils alsa-firmware alsa-card-profiles alsa-plugins pulseaudio pulseaudio-alsa pulseaudio-jack pulseaudio-bluetooth"
-         ;;
-         "2" ) ./scripts/pipewire.sh
-      esac
+./scripts/pipewire.sh
 clear
 echo '
 ──────────────────────────────────────────────────────────────────────────────────────────────────|
@@ -449,15 +418,7 @@ arch-chroot /mnt /bin/bash -c "systemctl enable NetworkManager bluetooth irqbala
 arch-chroot /mnt /bin/bash -c "systemctl --global enable dbus-broker.service"
 arch-chroot /mnt /bin/bash -c "systemctl mask plymouth-quit-wait.service"
 #----------------------------GRUB----------------------------------------------------------------------
-UUID=$(sudo blkid -o value -s UUID -l -t TYPE=swap)
-lpj_value=$(sudo dmesg | grep "lpj=" | awk -F'lpj=' '{print $2}' | awk '{gsub(/\(|\)/,""); print $1}')
-arch-chroot /mnt /bin/bash -c "grub-install /dev/$disk"
-arch-chroot /mnt /bin/bash -c "sed -i s/'GRUB_CMDLINE_LINUX_DEFAULT=.*'/'GRUB_CMDLINE_LINUX_DEFAULT= loglevel=3 quiet splash raid=noautodetect mitigations=off preempt=none nowatchdog audit=0 selinux=0 split_lock_detect=off pci=pcie_bus_perf zswap.enabled=0 ibt=off libahci.ignore_sss=1 nmi_watchdog=0 lpj=$lpj_value\"/g' /etc/default/grub"
-arch-chroot /mnt /bin/bash -c "sed -i s/'#GRUB_DISABLE_OS_PROBER=false'/'GRUB_DISABLE_OS_PROBER=false'/g /etc/default/grub"
-if [ -n "$UUID" ]; then
-    arch-chroot /mnt /bin/bash -c "sed -i s/'GRUB_CMDLINE_LINUX_DEFAULT='/'GRUB_CMDLINE_LINUX_DEFAULT=\"resume=UUID=$UUID/g' /etc/default/grub"
-fi
-arch-chroot /mnt /bin/bash -c "grub-mkconfig -o /boot/grub/grub.cfg"
+./scripts/grub.sh
 #----------------------------initcpio----------------------------------------------------------------------
 arch-chroot /mnt /bin/bash -c "sed -i s/'BINARIES=()'/'BINARIES=(setfont)'/g /etc/mkinitcpio.conf"
 arch-chroot /mnt /bin/bash -c "sed -i s/'HOOKS=.*'/'HOOKS=(base systemd plymouth autodetect modconf kms keyboard sd-vconsole block filesystems)'/g /etc/mkinitcpio.conf"
