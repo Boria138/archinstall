@@ -205,8 +205,8 @@ fi
 arch-chroot /mnt /bin/bash -c "rate-mirrors --allow-root arch | tee /etc/pacman.d/mirrorlist"
 arch-chroot /mnt /bin/bash -c "rate-mirrors --allow-root chaotic-aur | tee /etc/pacman.d/chaotic-mirrorlist"
 #----------------------------Base Packages----------------------------------------------------------------------
-arch-chroot /mnt /bin/bash -c "pacman -Syy --needed --noconfirm noto-fonts noto-fonts-cjk noto-fonts-emoji noto-fonts-extra ttf-ms-fonts ttf-meslo-nerd-font-powerlevel10k bluez-utils bluez pipewire-jack grub efibootmgr firefox firefox-i18n-ru networkmanager bash-completion ntfs-3g os-prober xdg-user-dirs xdg-utils xclip wl-clipboard lrzip zip unrar unzip unace p7zip squashfs-tools hunspell gstreamer gst-plugins-bad gst-plugin-pipewire gst-plugins-base gst-plugins-good gst-libav ffmpegthumbnailer hunspell-en_us hunspell-ru xorg xorg-server xorg-xinit realtime-privileges dbus-broker irqbalance ananicy-cpp ananicy-rules-git memavaild uresourced plymouth prelockd yay cantarell-fonts"
 ./scripts/pipewire.sh
+arch-chroot /mnt /bin/bash -c "pacman -Syy --needed --noconfirm noto-fonts noto-fonts-cjk noto-fonts-emoji noto-fonts-extra ttf-ms-fonts ttf-meslo-nerd-font-powerlevel10k bluez-utils bluez grub efibootmgr firefox firefox-i18n-ru networkmanager bash-completion ntfs-3g os-prober xdg-user-dirs xdg-utils xclip wl-clipboard lrzip zip unrar unzip unace p7zip squashfs-tools hunspell gstreamer gst-plugins-bad gst-plugin-pipewire gst-plugins-base gst-plugins-good gst-libav ffmpegthumbnailer hunspell-en_us hunspell-ru xorg xorg-server xorg-xinit realtime-privileges dbus-broker irqbalance ananicy-cpp ananicy-rules-git memavaild uresourced plymouth prelockd yay"
 clear
 echo '
 ──────────────────────────────────────────────────────────────────────────────────────────────────|
@@ -390,6 +390,9 @@ clear
 #----------------------------Time----------------------------------------------------------------------
 arch-chroot /mnt /bin/bash -c "ln -sf /usr/share/zoneinfo/$region /etc/localtime"
 arch-chroot /mnt /bin/bash -c "hwclock --systohc"
+#----------------------------Files----------------------------------------------------------------------
+touch /mnt/etc/locale.conf
+touch /mnt/etc/hostname
 #----------------------------Locale----------------------------------------------------------------------
 if grep -q "LANG=ru_RU.UTF-8" /mnt/etc/locale.conf; then
   echo "Локаль уже настроенна!"
