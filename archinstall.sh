@@ -12,11 +12,15 @@
 #           :
 #----------------------------------------------------------------------|
 setfont cyr-sun16
-pacman-key --recv-key FBA220DFC880C036 --keyserver keyserver.ubuntu.com
-pacman-key --lsign-key FBA220DFC880C036
-pacman -U --noconfirm 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-keyring.pkg.tar.zst' 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-mirrorlist.pkg.tar.zst'
-echo -e '\n[chaotic-aur]' >> /etc/pacman.conf
-echo 'Include = /etc/pacman.d/chaotic-mirrorlist' >> /etc/pacman.conf
+if grep -q "chaotic-aur" /etc/pacman.conf; then
+  echo "Chaotic-AUR уже добавлен!"
+else
+   pacman-key --recv-key 3056513887B78AEB --keyserver keyserver.ubuntu.com
+   pacman-key --lsign-key 3056513887B78AEB
+   pacman -U 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-keyring.pkg.tar.zst' 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-mirrorlist.pkg.tar.zst'
+   echo -e '\n[chaotic-aur]' >> /etc/pacman.conf
+   echo 'Include = /etc/pacman.d/chaotic-mirrorlist' >> /etc/pacman.conf
+fi
 clear
 echo '
                ─▄▀─▄▀
@@ -196,9 +200,9 @@ arch-chroot /mnt /bin/bash -c "sed -i '/\[multilib\]/,/Include/''s/^#//' /etc/pa
 if grep -q "chaotic-aur" /mnt/etc/pacman.conf; then
   echo "Chaotic-AUR уже добавлен!"
 else
-  arch-chroot /mnt /bin/bash -c "pacman-key --recv-key FBA220DFC880C036 --keyserver keyserver.ubuntu.com"
-  arch-chroot /mnt /bin/bash -c "pacman-key --lsign-key FBA220DFC880C036"
-  arch-chroot /mnt /bin/bash -c "pacman -U --noconfirm 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-keyring.pkg.tar.zst' 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-mirrorlist.pkg.tar.zst'"
+  arch-chroot /mnt /bin/bash -c "pacman-key --recv-key 3056513887B78AEB --keyserver keyserver.ubuntu.com"
+  arch-chroot /mnt /bin/bash -c "pacman-key --lsign-key 3056513887B78AEB"
+  arch-chroot /mnt /bin/bash -c "pacman -U --noconfirm  'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-keyring.pkg.tar.zst' 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-mirrorlist.pkg.tar.zst'"
   arch-chroot /mnt /bin/bash -c "echo -e '\n[chaotic-aur]' >> /etc/pacman.conf"
   arch-chroot /mnt /bin/bash -c "echo 'Include = /etc/pacman.d/chaotic-mirrorlist' >> /etc/pacman.conf"
 fi
