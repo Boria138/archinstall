@@ -17,7 +17,7 @@ nvidia_check_arch(){
 nvidia_check_arch
 
 f [[ -n "$nv_arch" ]]; then
-    if [[ $nv_arch == Maxwell || $nv_arch == Pascal || $nv_arch == Volta || $nv_arch == Turing || $nv_arch == Ampere || $nv_arch == Ada_Lovelace ]]; then
+    if [[ $nv_arch == Maxwell || $nv_arch == Pascal || $nv_arch == Volta || $nv_arch == Turing || $nv_arch == Ampere || $nv_arch == Ada_Lovelace || $nv_arch == Fermi ]]; then
           export __GL_MaxFramesAllowed=3
           export __GL_YIELD="USLEEP"
           export __GL_SHADER_DISK_CACHE_SKIP_CLEANUP=1
