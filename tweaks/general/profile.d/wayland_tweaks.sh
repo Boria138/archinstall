@@ -6,14 +6,14 @@ if [ "$XDG_SESSION_TYPE" = "wayland" ]; then
 		export EGL_PLATFORM=wayland
 		export QSG_RENDER_LOOP='basic'
 	fi
-if [[ $DESKTOP_SESSION == "gnome" ]]; then
-    export XCURSOR_THEME=breeze
-    export XCURSOR_SIZE=24
-fi
     # fallback to Xwayland for Qt applications 
     export QT_QPA_PLATFORM="wayland;xcb"
-    export WINIT_UNIX_BACKEND=x11 # Workaround for Alacritty title bar
+    # Workaround for Alacritty title bar
+    export WINIT_UNIX_BACKEND=x11
+    # Firefox Wayland Support
     export MOZ_ENABLE_WAYLAND=1
+    # Wlroots disable hardware cursors and instead use software cursors
     export WLR_NO_HARDWARE_CURSORS=1 
+    # Kitty terminal Wayland Support
     export KITTY_ENABLE_WAYLAND=1
 fi

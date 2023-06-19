@@ -14,15 +14,6 @@ if pacman -Qi npm &> /dev/null; then
   npm config set prefix ~/.local
 fi
 
-# Set kvantum QT engine in GTK DE
-if [[ $DESKTOP_SESSION != "plasma" ]]; then
-  if [ -z "$QT_QPA_PLATFORMTHEME" ]; then
-    if pacman -Qi kvantum &> /dev/null; then
-      export QT_STYLE_OVERRIDE=kvantum
-    fi
-  fi
-fi
-
 # Fix cursor bug in GNOME XORG
 if [[ $DESKTOP_SESSION == "gnome-xorg" ]]; then
   xset -b off
