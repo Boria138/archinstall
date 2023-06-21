@@ -421,7 +421,7 @@ fi
 cp -rf ./tweaks/general/* /mnt/etc/
 cp -rf ./tweaks/usr/bin/* /mnt/usr/bin/
 #----------------------------Services----------------------------------------------------------------------
-arch-chroot /mnt /bin/bash -c "systemctl enable NetworkManager bluetooth irqbalance dbus-broker.service ananicy-cpp systemd-oomd uresourced memavaild prelockd kernel-tweaks.timer pci-latency.service optimize-interruptfreq.service"
+arch-chroot /mnt /bin/bash -c "systemctl enable NetworkManager bluetooth irqbalance dbus-broker.service ananicy-cpp systemd-oomd uresourced memavaild prelockd system-tweaks.service"
 arch-chroot /mnt /bin/bash -c "systemctl --global enable dbus-broker.service"
 arch-chroot /mnt /bin/bash -c "systemctl mask plymouth-quit-wait.service"
 #----------------------------GRUB----------------------------------------------------------------------

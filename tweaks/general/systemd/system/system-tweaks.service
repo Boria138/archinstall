@@ -1,0 +1,11 @@
+# By Boria138
+
+[Unit]
+Description=Service for optimizing system settings
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/system-tweaks.sh
+
+[Install]
+WantedBy=multi-user.target
