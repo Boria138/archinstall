@@ -163,11 +163,11 @@ echo -n "
 read main_menu
       case "$main_menu" in
 
-         "1" ) clear ; pacstrap /mnt base rate-mirrors rsync base-devel linux linux-headers linux-firmware mkinitcpio-firmware dosfstools mtools btrfs-progs iucode-tool archlinux-keyring micro git --noconfirm
+         "1" ) clear ; pacstrap /mnt base rate-mirrors rsync base-devel linux linux-headers linux-firmware mkinitcpio-firmware dosfstools mtools btrfs-progs xfsprogs f2fs-tools iucode-tool archlinux-keyring micro git --noconfirm
          ;;
-         "2" ) clear ; pacstrap /mnt base rate-mirrors rsync base-devel linux-zen linux-zen-headers linux-firmware mkinitcpio-firmware dosfstools mtools btrfs-progs iucode-tool archlinux-keyring micro git --noconfirm
+         "2" ) clear ; pacstrap /mnt base rate-mirrors rsync base-devel linux-zen linux-zen-headers linux-firmware mkinitcpio-firmware dosfstools mtools btrfs-progs xfsprogs f2fs-tools iucode-tool archlinux-keyring micro git --noconfirm
          ;;
-         "3" ) clear ; pacstrap /mnt base rate-mirrors rsync base-devel linux-lts linux-lts-headers linux-firmware mkinitcpio-firmware dosfstools mtools btrfs-progs iucode-tool archlinux-keyring micro git --noconfirm
+         "3" ) clear ; pacstrap /mnt base rate-mirrors rsync base-devel linux-lts linux-lts-headers linux-firmware mkinitcpio-firmware dosfstools mtools btrfs-progs xfsprogs f2fs-tools iucode-tool archlinux-keyring micro git --noconfirm
       esac
 
 clear
@@ -223,6 +223,34 @@ echo '
 '
 ./scripts/install-video-drivers.sh
 clear
+echo '
+                                          ZRAM
+                .────────────────────────────────────────────────────────.
+                .                                                        .
+                .            Собирайтесь ли вы использовать ZRAM         .
+                .                                                        .
+                .        (Если вы уже используйте swap ответьте нет)     .
+                .                                                        .
+                .                                                        .
+                .────────────────────────────────────────────────────────.
+'
+echo -e "\t
+
+                          -> Да   ( 1 )"
+echo -e "\t
+
+                          -> Нет  ( 2 )"
+
+echo -n "
+
+                          -> Введите значение : "
+read main_menu
+      case "$main_menu" in
+         "1" ) export zram=1
+         ;;
+         "2" ) clear ; export zram=0
+         clear
+         esac
 echo '
                                    Графическая оболочка
                 .────────────────────────────────────────────────────────.
@@ -425,7 +453,12 @@ arch-chroot /mnt /bin/bash -c "systemctl enable NetworkManager bluetooth irqbala
 arch-chroot /mnt /bin/bash -c "systemctl --global enable dbus-broker.service"
 arch-chroot /mnt /bin/bash -c "systemctl mask plymouth-quit-wait.service"
 #----------------------------GRUB----------------------------------------------------------------------
-./scripts/grub.sh
+if [ "${zram}" -eq "0" ] ; then
+    ./scripts/grub.sh
+else
+  ./scripts/grub_zram.sh
+  cp -rf ./tweaks/zram/30-zram.rules /mnt/etc/udev/rules.d/30-zram.rules
+fi
 #----------------------------initcpio----------------------------------------------------------------------
 arch-chroot /mnt /bin/bash -c "sed -i s/'BINARIES=()'/'BINARIES=(setfont)'/g /etc/mkinitcpio.conf"
 arch-chroot /mnt /bin/bash -c "sed -i s/'HOOKS=.*'/'HOOKS=(base systemd plymouth autodetect modconf kms keyboard sd-vconsole block filesystems)'/g /etc/mkinitcpio.conf"

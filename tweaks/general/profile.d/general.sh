@@ -5,7 +5,7 @@ export PATH=~/.local/bin:$PATH
 export TMPDIR='/var/tmp'
 
 # Set $EDITOR to micro if is empty
-if [ -z "$EDITOR"]; then
+if [ -z "$EDITOR" ]; then
   export EDITOR=micro 
 fi
 

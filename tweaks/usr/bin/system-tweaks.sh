@@ -25,22 +25,11 @@ for device in /sys/block/zram*; do
     fi
 done
 
-# Set vm.dirty_ratio and vm.dirty_background_ratio based on RAM size
-if [ $total_mem -le 3 ]; then
-    sysctl -w vm.dirty_ratio=10
-    sysctl -w vm.dirty_background_ratio=5
-elif [ $total_mem -le 15 ]; then
-    sysctl -w vm.dirty_ratio=4
-    sysctl -w vm.dirty_background_ratio=2
-fi
-
 # Set vm.vfs_cache_pressure based on storage type
 if [[ $storage_type == "ssd" ||  $storage_type == "nvme" ]]; then
   sysctl -w vm.vfs_cache_pressure=50
-  sysctl -w vm.page-cluster=1
 elif [[ $total_mem -gt 1 && $storage_type == "hdd" ]]; then
   sysctl -w vm.vfs_cache_pressure=1000
-  sysctl -w vm.page-cluster=2
 fi
 
 # Reset the latency timer for all PCI devices
