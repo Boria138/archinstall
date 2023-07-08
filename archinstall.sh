@@ -246,7 +246,7 @@ echo -n "
                           -> Введите значение : "
 read main_menu
       case "$main_menu" in
-         "1" ) export zram=1
+         "1" )clear ; export zram=1
          ;;
          "2" ) clear ; export zram=0
          clear
@@ -457,7 +457,9 @@ if [ "${zram}" -eq "0" ] ; then
     ./scripts/grub.sh
 else
   ./scripts/grub_zram.sh
+  arch-chroot /mnt /bin/bash -c "pacman -S zram-generator"
   cp -rf ./tweaks/zram/30-zram.rules /mnt/etc/udev/rules.d/30-zram.rules
+  cp -rf ./tweaks/zram/zram-generator.conf /mnt/etc/systemd/zram-generator.conf
 fi
 #----------------------------initcpio----------------------------------------------------------------------
 arch-chroot /mnt /bin/bash -c "sed -i s/'BINARIES=()'/'BINARIES=(setfont)'/g /etc/mkinitcpio.conf"
