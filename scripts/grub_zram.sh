@@ -2,7 +2,7 @@
 lpj_value=$(sudo dmesg | grep "lpj=" | awk -F'lpj=' '{print $2}' | awk '{gsub(/\(|\)/,""); print $1}')
 
 # Install GRUB
-if lsblk | grep "efi"; then
+if [[ -d "/sys/firmware/efi" ]]; then
   arch-chroot /mnt /bin/bash -c "grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=arch"
 else
   arch-chroot /mnt /bin/bash -c "grub-install --target=i386-pc /dev/$disk"

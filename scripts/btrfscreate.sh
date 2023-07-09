@@ -113,7 +113,6 @@ read main_menu
          ;;
          "2" ) clear
       esac
-
 clear
 echo '
                            Выбор файловой системы корневого раздела
@@ -230,40 +229,13 @@ clear
         clear
       esac
 clear
-echo '
-                              Монтирование boot раздела
 
-               .─────────────────────────────────────────────────────────.
-               .                                                         .
-               .                                                         .
-               .          Монтирование загрузочного раздела !            .
-               .                                                         .
-               .    Выберите один из вариантов монтирования boot раздела .
-               .                                                         .
-               .        Для обычного биоса (НЕ UEFI) введите 2           .
-               .                                                         .
-               .              Для UEFI биоса , введите 1                 .
-               .                                                         .
-               .                                                         .
-               .─────────────────────────────────────────────────────────.
-'
-echo -e "\t
-
-                        -> Для UEFI или EFI введите     1"
-echo -e "\t
-
-
-                        -> Для обычного Bios введите    2"
-echo -n "
-
-
-                        -> Введите значение : "
-read main_menu
-      case "$main_menu" in
-         "1" ) mkdir -p /mnt/boot/efi ; mount /dev/$boot /mnt/boot/efi
-         ;;
-         "2" ) mkdir -p /mnt/boot ; mount /dev/$boot  /mnt/boot/
-      esac
+# Mount boot 
+if [[ -d "/sys/firmware/efi" ]]; then
+   mkdir -p /mnt/boot/efi ; mount /dev/$boot /mnt/boot/efi
+else
+  mkdir -p /mnt/boot ; mount /dev/$boot  /mnt/boot/
+fi
 
 clear
 lsblk

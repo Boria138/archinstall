@@ -457,7 +457,7 @@ if [ "${zram}" -eq "0" ] ; then
     ./scripts/grub.sh
 else
   ./scripts/grub_zram.sh
-  arch-chroot /mnt /bin/bash -c "pacman -S zram-generator"
+  arch-chroot /mnt /bin/bash -c "pacman -S --needed --noconfirm zram-generator"
   cp -rf ./tweaks/zram/30-zram.rules /mnt/etc/udev/rules.d/30-zram.rules
   cp -rf ./tweaks/zram/zram-generator.conf /mnt/etc/systemd/zram-generator.conf
 fi
