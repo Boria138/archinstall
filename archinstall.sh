@@ -162,14 +162,12 @@ echo -n "
                                  -> Введите значение : "
 read main_menu
       case "$main_menu" in
-
-         "1" ) clear ; pacstrap /mnt base rate-mirrors rsync base-devel linux linux-headers linux-firmware mkinitcpio-firmware dosfstools mtools btrfs-progs xfsprogs f2fs-tools iucode-tool archlinux-keyring micro git --noconfirm
+         "1" ) clear ; pacstrap /mnt base rate-mirrors rsync base-devel linux linux-headers linux-firmware mkinitcpio-firmware dosfstools ntfs-3g mtools btrfs-progs xfsprogs f2fs-tools iucode-tool archlinux-keyring micro git --noconfirm
          ;;
-         "2" ) clear ; pacstrap /mnt base rate-mirrors rsync base-devel linux-zen linux-zen-headers linux-firmware mkinitcpio-firmware dosfstools mtools btrfs-progs xfsprogs f2fs-tools iucode-tool archlinux-keyring micro git --noconfirm
+         "2" ) clear ; pacstrap /mnt base rate-mirrors rsync base-devel linux-zen linux-zen-headers linux-firmware mkinitcpio-firmware dosfstools ntfs-3g mtools btrfs-progs xfsprogs f2fs-tools iucode-tool archlinux-keyring micro git --noconfirm
          ;;
-         "3" ) clear ; pacstrap /mnt base rate-mirrors rsync base-devel linux-lts linux-lts-headers linux-firmware mkinitcpio-firmware dosfstools mtools btrfs-progs xfsprogs f2fs-tools iucode-tool archlinux-keyring micro git --noconfirm
+         "3" ) clear ; pacstrap /mnt base rate-mirrors rsync base-devel linux-lts linux-lts-headers linux-firmware mkinitcpio-firmware dosfstools ntfs-3g mtools btrfs-progs xfsprogs f2fs-tools iucode-tool archlinux-keyring micro git --noconfirm
       esac
-
 clear
 genfstab -U /mnt >> /mnt/etc/fstab
 echo '
@@ -208,9 +206,20 @@ else
 fi
 arch-chroot /mnt /bin/bash -c "rate-mirrors --allow-root arch | tee /etc/pacman.d/mirrorlist"
 arch-chroot /mnt /bin/bash -c "rate-mirrors --allow-root chaotic-aur | tee /etc/pacman.d/chaotic-mirrorlist"
-#----------------------------Base Packages----------------------------------------------------------------------
+#----------------------------XORG----------------------------------------------------------------------
+arch-chroot /mnt /bin/bash -c "pacman -Sy --needed --noconfirm xorg xorg-server xorg-xinit xf86-input-libinput xorg-xdpyinfo xorg-xinput xorg-xkill xorg-xrandr"
+#----------------------------Fonts----------------------------------------------------------------------
+arch-chroot /mnt /bin/bash -c "pacman -Syy --needed --noconfirm noto-fonts noto-fonts-cjk noto-fonts-emoji noto-fonts-extra ttf-ms-fonts ttf-meslo-nerd-font-powerlevel10k"
+#----------------------------Pipewire----------------------------------------------------------------------
 ./scripts/pipewire.sh
-arch-chroot /mnt /bin/bash -c "pacman -Syy --needed --noconfirm noto-fonts noto-fonts-cjk noto-fonts-emoji noto-fonts-extra ttf-ms-fonts ttf-meslo-nerd-font-powerlevel10k bluez-utils bluez grub efibootmgr firefox firefox-i18n-ru networkmanager bash-completion ntfs-3g os-prober xdg-user-dirs xdg-utils xclip wl-clipboard lrzip zip unrar unzip unace p7zip squashfs-tools hunspell gstreamer gst-plugins-bad gst-plugin-pipewire gst-plugins-base gst-plugins-good gst-libav ffmpegthumbnailer hunspell-en_us hunspell-ru xorg xorg-server xorg-xinit realtime-privileges dbus-broker irqbalance ananicy-cpp ananicy-rules-git memavaild uresourced plymouth prelockd yay"
+#----------------------------Network----------------------------------------------------------------------
+arch-chroot /mnt /bin/bash -c "pacman -Sy --needed --noconfirm bluez-utils bluez firefox firefox-i18n-ru networkmanager"
+#----------------------------Utils----------------------------------------------------------------------
+arch-chroot /mnt /bin/bash -c "pacman -Sy --needed --noconfirm bash-completion os-prober xdg-user-dirs xdg-utils xclip wl-clipboard lrzip zip unrar unzip unace p7zip squashfs-tools hunspell hunspell-en_us hunspell-ru yay grub efibootmgr plymouth"
+#----------------------------Gstreamer----------------------------------------------------------------------
+arch-chroot /mnt /bin/bash -c "pacman -Sy --needed --noconfirm gstreamer gstreamer-vaapi gst-plugins-bad gst-plugin-pipewire gst-plugins-base gst-plugins-good gst-libav gst-plugins-ugly ffmpegthumbnailer"
+#----------------------------Optimization----------------------------------------------------------------------
+arch-chroot /mnt /bin/bash -c "pacman -Sy --needed --noconfirm realtime-privileges dbus-broker irqbalance ananicy-cpp ananicy-rules-git memavaild uresourced prelockd"
 clear
 echo '
 ──────────────────────────────────────────────────────────────────────────────────────────────────|
