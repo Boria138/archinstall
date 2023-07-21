@@ -164,7 +164,7 @@ read main_menu
       case "$main_menu" in
          "1" ) clear ; pacstrap /mnt base rate-mirrors rsync base-devel linux linux-headers linux-firmware mkinitcpio-firmware dosfstools ntfs-3g mtools btrfs-progs xfsprogs f2fs-tools iucode-tool archlinux-keyring micro git --noconfirm
          ;;
-         "2" ) clear ; pacstrap /mnt base rate-mirrors rsync base-devel linux-zen linux-zen-headers linux-firmware mkinitcpio-firmware dosfstools ntfs-3g mtools btrfs-progs xfsprogs f2fs-tools iucode-tool archlinux-keyring micro git --noconfirm
+         "2" ) clear ; pacstrap /mnt base rate-mirrors rsync base-devel linux-zen linux-zen-headers linux-firmware mkinitcpio-firmware dosfstools ntfs-3g mtools btrfs-progs xfsprogs f2fs-tools iucode-tool archlinux-keyring micro git uksmd --noconfirm
          ;;
          "3" ) clear ; pacstrap /mnt base rate-mirrors rsync base-devel linux-lts linux-lts-headers linux-firmware mkinitcpio-firmware dosfstools ntfs-3g mtools btrfs-progs xfsprogs f2fs-tools iucode-tool archlinux-keyring micro git --noconfirm
       esac
