@@ -32,30 +32,6 @@ echo '
 sleep 2
 clear
 echo '
-                                    Настройка часового пояса
-
-              .──────────────────────────────────────────────────────────────.
-              .                                                              .
-              .                                                              .
-              .  Настройка региона выставляет часовой пояс и время согласно  .
-              .                                                              .
-              .                      указанному региону                       .
-              .                                                              .
-              .  Название региона можно посмотреть в списке регионов или     .
-              .                                                              .
-              .  ввести вручную , если уже знаете , именно в таком формате   .
-              .                                                              .
-              .                  Пример -->   Europe/Moscow                  .
-              .                                                              .
-              .                                                              .
-              .──────────────────────────────────────────────────────────────.
-
-'
-read -p "
-                        -> Введите значение : " region
-
-clear
-echo '
                                       Выбор диска
 
               .─────────────────────────────────────────────────────────────.
@@ -73,21 +49,6 @@ echo '
 read -p "
                         -> Введите значение : " disk
 clear
-echo '
-                                        Имя хоста
-                .───────────────────────────────────────────────────────────.
-                .                                                           .
-                .                                                           .
-                .                   Укажите имя хоста                       .
-                .                                                           .
-                .                                                           .
-                .───────────────────────────────────────────────────────────.
-
-'
-read -p "
-                    -> Введите имя хоста:  " hostname
-clear
-
 echo '
                                         Пароль root
                 .───────────────────────────────────────────────────────────.
@@ -162,11 +123,11 @@ echo -n "
                                  -> Введите значение : "
 read main_menu
       case "$main_menu" in
-         "1" ) clear ; pacstrap /mnt base rate-mirrors rsync base-devel linux linux-headers linux-firmware mkinitcpio-firmware dosfstools ntfs-3g mtools btrfs-progs xfsprogs f2fs-tools iucode-tool archlinux-keyring micro git --noconfirm
+         "1" ) clear ; pacstrap /mnt base rate-mirrors rsync base-devel linux linux-headers linux-firmware mkinitcpio-firmware dosfstools ntfs-3g mtools btrfs-progs xfsprogs f2fs-tools archlinux-keyring micro git --noconfirm
          ;;
-         "2" ) clear ; pacstrap /mnt base rate-mirrors rsync base-devel linux-zen linux-zen-headers linux-firmware mkinitcpio-firmware dosfstools ntfs-3g mtools btrfs-progs xfsprogs f2fs-tools iucode-tool archlinux-keyring micro git uksmd --noconfirm
+         "2" ) clear ; pacstrap /mnt base rate-mirrors rsync base-devel linux-zen linux-zen-headers linux-firmware mkinitcpio-firmware dosfstools ntfs-3g mtools btrfs-progs xfsprogs f2fs-tools archlinux-keyring micro git uksmd --noconfirm
          ;;
-         "3" ) clear ; pacstrap /mnt base rate-mirrors rsync base-devel linux-lts linux-lts-headers linux-firmware mkinitcpio-firmware dosfstools ntfs-3g mtools btrfs-progs xfsprogs f2fs-tools iucode-tool archlinux-keyring micro git --noconfirm
+         "3" ) clear ; pacstrap /mnt base rate-mirrors rsync base-devel linux-lts linux-lts-headers linux-firmware mkinitcpio-firmware dosfstools ntfs-3g mtools btrfs-progs xfsprogs f2fs-tools archlinux-keyring micro git --noconfirm
       esac
 clear
 genfstab -U /mnt >> /mnt/etc/fstab
@@ -429,7 +390,8 @@ read main_menu
        esac
 clear
 #----------------------------Time----------------------------------------------------------------------
-arch-chroot /mnt /bin/bash -c "ln -sf /usr/share/zoneinfo/$region /etc/localtime"
+timezone=$(curl --fail https://ipapi.co/timezone)
+arch-chroot /mnt /bin/bash -c "ln -sf /usr/share/zoneinfo/$timezone /etc/localtime"
 arch-chroot /mnt /bin/bash -c "hwclock --systohc"
 #----------------------------Files----------------------------------------------------------------------
 touch /mnt/etc/locale.conf
@@ -446,13 +408,13 @@ else
   arch-chroot /mnt /bin/bash -c "echo 'FONT=cyr-sun16' >> /etc/vconsole.conf"
 fi
 #----------------------------Network----------------------------------------------------------------------
-if grep -q "$hostname" /mnt/etc/hostname; then
+if grep -q "arch" /mnt/etc/hostname; then
   echo "Сеть уже настроенна!"
 else
-  arch-chroot /mnt /bin/bash -c "echo $hostname >> /etc/hostname"
+  arch-chroot /mnt /bin/bash -c "echo arch >> /etc/hostname"
   arch-chroot /mnt /bin/bash -c "echo '127.0.0.1 localhost' >> /etc/hosts"
   arch-chroot /mnt /bin/bash -c "echo '::1       localhost' >> /etc/hosts"
-  arch-chroot /mnt /bin/bash -c "echo '127.0.1.1 $hostname.localdomain $hostname' >> /etc/hosts"
+  arch-chroot /mnt /bin/bash -c "echo '127.0.1.1 arch.localdomain $hostname' >> /etc/hosts"
 fi
 #----------------------------Tweaks----------------------------------------------------------------------
 cp -rf ./tweaks/general/* /mnt/etc/
@@ -460,7 +422,7 @@ cp -rf ./tweaks/usr/bin/* /mnt/usr/bin/
 #----------------------------Services----------------------------------------------------------------------
 arch-chroot /mnt /bin/bash -c "systemctl enable NetworkManager bluetooth irqbalance dbus-broker.service ananicy-cpp systemd-oomd uresourced memavaild prelockd system-tweaks.service"
 arch-chroot /mnt /bin/bash -c "systemctl --global enable dbus-broker.service"
-arch-chroot /mnt /bin/bash -c "systemctl mask plymouth-quit-wait.service"
+arch-chroot /mnt /bin/bash -c "systemctl mask plymouth-quit-wait.service NetworkManager-wait-online.service"
 #----------------------------GRUB----------------------------------------------------------------------
 if [ "${zram}" -eq "0" ] ; then
     ./scripts/grub.sh
@@ -470,7 +432,7 @@ else
   cp -rf ./tweaks/zram/30-zram.rules /mnt/etc/udev/rules.d/30-zram.rules
   cp -rf ./tweaks/zram/zram-generator.conf /mnt/etc/systemd/zram-generator.conf
 fi
-#----------------------------initcpio----------------------------------------------------------------------
+#----------------------------Initcpio----------------------------------------------------------------------
 arch-chroot /mnt /bin/bash -c "sed -i s/'BINARIES=()'/'BINARIES=(setfont)'/g /etc/mkinitcpio.conf"
 arch-chroot /mnt /bin/bash -c "sed -i s/'HOOKS=.*'/'HOOKS=(base systemd plymouth autodetect modconf kms keyboard sd-vconsole block filesystems)'/g /etc/mkinitcpio.conf"
 arch-chroot /mnt /bin/bash -c "mkinitcpio -P"
