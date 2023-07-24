@@ -194,34 +194,6 @@ echo '
 ./scripts/install-video-drivers.sh
 clear
 echo '
-                                          ZRAM
-                .────────────────────────────────────────────────────────.
-                .                                                        .
-                .            Собирайтесь ли вы использовать ZRAM         .
-                .                                                        .
-                .        (Если вы уже используйте swap ответьте нет)     .
-                .                                                        .
-                .                                                        .
-                .────────────────────────────────────────────────────────.
-'
-echo -e "\t
-
-                          -> Да   ( 1 )"
-echo -e "\t
-
-                          -> Нет  ( 2 )"
-
-echo -n "
-
-                          -> Введите значение : "
-read main_menu
-      case "$main_menu" in
-         "1" )clear ; export zram=1
-         ;;
-         "2" ) clear ; export zram=0
-         clear
-         esac
-echo '
                                    Графическая оболочка
                 .────────────────────────────────────────────────────────.
                 .                                                        .
@@ -424,6 +396,13 @@ arch-chroot /mnt /bin/bash -c "systemctl enable NetworkManager bluetooth irqbala
 arch-chroot /mnt /bin/bash -c "systemctl --global enable dbus-broker.service"
 arch-chroot /mnt /bin/bash -c "systemctl mask plymouth-quit-wait.service NetworkManager-wait-online.service"
 #----------------------------GRUB----------------------------------------------------------------------
+# If swap enabled zram disabled else enable
+if [[ $(swapon --show) ]]; then
+  export zram=1
+else
+  export zram=0
+fi
+
 if [ "${zram}" -eq "0" ] ; then
     ./scripts/grub.sh
 else

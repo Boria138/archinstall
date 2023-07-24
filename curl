@@ -10,6 +10,7 @@
 # License   : LGPL-3.0 (http://opensource.org/licenses/lgpl-3.0.html)
 #           :
 #----------------------------------------------------------------------|
+setfont cyr-sun16
 timedatectl set-ntp true
 sleep 2
 clear

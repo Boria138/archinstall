@@ -54,12 +54,11 @@ read -p "
 read -p "
                                  -> Root: " root
 read -p "
-                                 -> Swap(Если используйте zram оставте пустым): " swap
+                                 -> Swap(Если используйте zram оставте пустым) " swap
 
 clear
 mkswap /dev/$swap 
 swapon /dev/$swap
-export $swap
 clear
 
 echo '
@@ -107,11 +106,11 @@ read main_menu
       case "$main_menu" in
          "1" ) clear ; mkfs.vfat -F32 /dev/$boot
          ;;
+         "2" ) clear
+         ;;
          "3" ) clear ; mkfs.ext4 /dev/$boot
          ;;
          "4" ) clear ; mkfs.ext2 /dev/$boot
-         ;;
-         "2" ) clear
       esac
 clear
 echo '
