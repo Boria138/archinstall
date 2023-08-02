@@ -398,9 +398,9 @@ arch-chroot /mnt /bin/bash -c "systemctl mask plymouth-quit-wait.service Network
 #----------------------------GRUB----------------------------------------------------------------------
 # If swap enabled zram disabled else enable
 if [[ $(swapon --show) ]]; then
-  export zram=1
-else
   export zram=0
+else
+  export zram=1
 fi
 
 if [ "${zram}" -eq "0" ] ; then
